@@ -22,13 +22,27 @@ describe("GET /api/topics", () => {
         });
       });
   });
-  test("404: responds not found for invalid path", () => {
-    return request(app)
-      .get("/api/notTopics")
-      .expect(404)
-      .then((result) => {
-        console.log(result.body);
-        expect(result.body.msg).toBe("Path not found");
-      });
+  test("404: responds not found for invalid path", async () => {
+    const result = await request(app).get("/api/notTopics").expect(404);
+    expect(result.body.msg).toBe("Path not found");
+  });
+});
+
+describe("GET api/articles/articleID", () => {
+  test("200: responds with object containing correct properties", async () => {
+    const result = await request(app).get("/api/articles/1").expect(200);
+    expect(result.body.article).toMatchObject({
+      author: expect.any(String),
+      title: expect.any(String),
+      article_id: expect.any(Number),
+      body: expect.any(String),
+      topic: expect.any(String),
+      created_at: expect.any(String),
+      votes: expect.any(Number),
+    });
+  });
+  test("400: invalid article", async () => {
+    const result = await request(app).get("/api/articles/99995").expect(400);
+    expect(result.body.msg).toBe("Bad request");
   });
 });
