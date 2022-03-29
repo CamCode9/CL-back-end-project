@@ -97,4 +97,19 @@ describe("PATCH /api/articles/:article_id", () => {
       .expect(404);
     expect(result.body.msg).toBe("Resource not found");
   });
+  test("400: wrong article id type", async () => {
+    const result = await request(app)
+      .patch("/api/articles/notNumber")
+      .send({ inc_votes: 2 })
+      .expect(400);
+    expect(result.body.msg).toBe("Bad request");
+  });
+  test("400: invalid vote_inc type", async () => {
+    const result = await request(app)
+      .patch("/api/articles/1")
+      .send({ inc_votes: "cheese" })
+      .expect(400);
+
+    expect(result.body.msg).toBe("Bad request");
+  });
 });
