@@ -28,7 +28,7 @@ describe("GET /api/topics", () => {
 
 //updated test to reflect comment count
 describe("GET api/articles/articleID with COMMENT COUNT", () => {
-  test("200: responds with object containing correct properties", async () => {
+  test.only("200: responds with object containing correct properties", async () => {
     const result = await request(app).get("/api/articles/1").expect(200);
     expect(result.body.article).toMatchObject({
       author: expect.any(String),

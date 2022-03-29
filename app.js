@@ -1,5 +1,8 @@
 const express = require("express");
-const { getArticles } = require("./controllers/articles.controllers");
+const {
+  getArticlesById,
+  getAllArticles,
+} = require("./controllers/articles.controllers");
 const { getTopics } = require("./controllers/topics.controllers");
 const { getUsers } = require("./controllers/users.controllers");
 
@@ -8,7 +11,8 @@ const app = express();
 app.use(express.json());
 
 app.get("/api/topics", getTopics);
-app.get("/api/articles/:article_id", getArticles);
+app.get("/api/articles", getAllArticles);
+app.get("/api/articles/:article_id", getArticlesById);
 app.get("/api/users", getUsers);
 
 //handle psql err
