@@ -1,3 +1,6 @@
+const format = require("pg-format");
+const db = require("../connection");
+
 exports.convertTimestampToDate = ({ created_at, ...otherProperties }) => {
   if (!created_at) return { ...otherProperties };
   return { created_at: new Date(created_at), ...otherProperties };
@@ -29,5 +32,7 @@ exports.checkExists = async (table, column, value) => {
   if (dbOutput.rows.length === 0) {
     // resource does NOT exist
     return Promise.reject({ status: 404, msg: "Resource not found" });
+  } else {
+    return true;
   }
 };
