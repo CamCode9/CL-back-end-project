@@ -26,7 +26,8 @@ describe("GET /api/topics", () => {
   });
 });
 
-describe("GET api/articles/articleID", () => {
+//updated test to reflect comment count
+describe("GET api/articles/articleID with COMMENT COUNT", () => {
   test("200: responds with object containing correct properties", async () => {
     const result = await request(app).get("/api/articles/1").expect(200);
     expect(result.body.article).toMatchObject({
@@ -37,6 +38,7 @@ describe("GET api/articles/articleID", () => {
       topic: expect.any(String),
       created_at: expect.any(String),
       votes: expect.any(Number),
+      comment_count: expect.any(Number),
     });
   });
   test("404: wrong article id", async () => {
