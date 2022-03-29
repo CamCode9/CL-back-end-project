@@ -20,7 +20,7 @@ describe("GET /api/topics", () => {
       });
     });
   });
-  test("404: responds not found for invalid path", async () => {
+  test("400: responds bad request for invalid path", async () => {
     const result = await request(app).get("/api/notTopics").expect(400);
     expect(result.body.msg).toBe("Bad request");
   });
@@ -41,12 +41,26 @@ describe("GET api/articles/articleID", () => {
   });
   test("404: wrong article id", async () => {
     const result = await request(app).get("/api/articles/99995").expect(404);
-    expect(result.body.msg).toBe("Path not found");
+    expect(result.body.msg).toBe("Article not found");
   });
   test("400: responds bad request for article ID not an integer", async () => {
     const result = await request(app)
       .get("/api/articles/anArticle")
       .expect(400);
+    expect(result.body.msg).toBe("Bad request");
+  });
+});
+
+describe("GET /api/users", () => {
+  test("200: responds with array of users", async () => {
+    const result = await request(app).get("/api/users").expect(200);
+    expect(result.body.users).toBeInstanceOf(Array);
+    result.body.users.forEach((user) => {
+      expect(user).toMatchObject({ username: expect.any(String) });
+    });
+  });
+  test("400: responds bad request for invalid path", async () => {
+    const result = await request(app).get("/api/notUsers").expect(400);
     expect(result.body.msg).toBe("Bad request");
   });
 });
