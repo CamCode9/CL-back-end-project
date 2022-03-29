@@ -8,7 +8,7 @@ exports.getArticles = async (req, res, next) => {
     const { article_id } = req.params;
     const result = await selectArticlesById(article_id, next);
     res.status(200).send({ article: result });
-  } catch (next) {
-    console.log("Something went wrong....");
+  } catch (err) {
+    next(err);
   }
 };

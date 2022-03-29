@@ -9,14 +9,28 @@ app.use(express.json());
 app.get("/api/topics", getTopics);
 app.get("/api/articles/:article_id", getArticles);
 
-// app.use((err, req, res, next) => {
-//   if (err.status) {
-//     res.status(err.status).send({ msg: err.msg });
-//   }
-// });
+//handle psql err
+app.use((err, req, res, next) => {
+  const badReqCodes = ["22P02"];
+  if (badReqCodes.includes(err.code)) {
+    res.status(400).send({ msg: "Bad request" });
+  } else {
+    next(err);
+  }
+});
 
+// handle custom err
+app.use((err, req, res, next) => {
+  if (err.status) {
+    res.status(err.status).send({ msg: err.msg });
+  } else {
+    next(err);
+  }
+});
+
+//handle any invalid/unspecified path
 app.all("/*", (req, res, next) => {
-  res.status(404).send({ msg: "Path not found" });
+  res.status(400).send({ msg: "Bad request" });
 });
 
 // handle unexpected errors
