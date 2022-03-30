@@ -5,7 +5,7 @@ exports.selectArticlesById = async (article_id) => {
   let result;
 
   if (!article_id) {
-    articleQuery += ` ORDER BY created_at DESC`;
+    articleQuery += ` ORDER BY created_at DESC;`;
     result = await db.query(articleQuery);
   } else {
     articleQuery += ` WHERE article_id = $1;`;
@@ -45,7 +45,18 @@ exports.updateArticleVoteById = async (article_id, voteInc) => {
 };
 
 exports.selectCommentsByArticle = async (article_id) => {
-  let commentQuery = `SELECT comment_id, votes, created_at, author, body FROM comments WHERE article_id = $1`;
+  let commentQuery = `SELECT comment_id, votes, created_at, author, body FROM comments WHERE article_id = $1;`;
   const commentArray = await db.query(commentQuery, [article_id]);
   return commentArray.rows;
+};
+
+exports.sendComment = async (article_id, author, body) => {
+  if (typeof body != "string") {
+    return Promise.reject({ status: 400, msg: "Invalid data type" });
+  } else {
+    const postQuery = `INSERT INTO comments (article_id, author, body) VALUES ($1, $2, $3) RETURNING *;`;
+    const new_comment = await db.query(postQuery, [article_id, author, body]);
+
+    return new_comment.rows[0];
+  }
 };

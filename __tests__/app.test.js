@@ -178,3 +178,56 @@ describe("GET /api/articles/:article_id/comments", () => {
     expect(result.body.comments).toEqual([]);
   });
 });
+
+describe("POST /api/articles/:article_id/comments", () => {
+  test("201: succeessfully posts comment and responds w comment", async () => {
+    const result = await request(app)
+      .post("/api/articles/2/comments")
+      .send({ username: "butter_bridge", body: "Up the blues" })
+      .expect(201);
+    expect(result.body.new_comment).toEqual({
+      article_id: 2,
+      author: "butter_bridge",
+      body: "Up the blues",
+      comment_id: expect.any(Number),
+      created_at: expect.any(String),
+      votes: 0,
+    });
+  });
+  test("400: invalid article id", async () => {
+    const result = await request(app)
+      .post("/api/articles/NOTNUMBER/comments")
+      .send({ username: "butter_bridge", body: "Up the blues" })
+      .expect(400);
+    expect(result.body.msg).toBe("Bad request");
+  });
+  test("404: article id not found", async () => {
+    const result = await request(app)
+      .post("/api/articles/8080/comments")
+      .send({ username: "butter_bridge", body: "Up the blues" })
+      .expect(404);
+    expect(result.body.msg).toBe("Resource not found");
+  });
+  test("404: user not found", async () => {
+    const result = await request(app)
+      .post("/api/articles/2/comments")
+      .send({ username: "Phil the power Taylor", body: "Up the blues" })
+      .expect(404);
+    expect(result.body.msg).toBe("Resource not found");
+  });
+  test("404: invalid username type (user not found)", async () => {
+    const result = await request(app)
+      .post("/api/articles/2/comments")
+      .send({ username: ["secret"], body: "Up the blues" })
+      .expect(404);
+    expect(result.body.msg).toBe("Resource not found");
+  });
+  test("400: invalid body type", async () => {
+    const result = await request(app)
+      .post("/api/articles/2/comments")
+      .send({ username: "butter_bridge", body: 55939 })
+      .expect(400);
+    expect(result.body.msg).toBe("Invalid data type");
+  });
+});
+//lots of err testing for this one pls
