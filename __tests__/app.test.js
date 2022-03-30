@@ -114,19 +114,30 @@ describe("GET /api/users", () => {
     const result = await request(app).get("/api/notUsers").expect(400);
     expect(result.body.msg).toBe("Bad request");
   });
-  test("400: wrong article id type", async () => {
-    const result = await request(app)
-      .patch("/api/articles/notNumber")
-      .send({ inc_votes: 2 })
-      .expect(400);
-    expect(result.body.msg).toBe("Bad request");
-  });
-  test("400: invalid vote_inc type", async () => {
-    const result = await request(app)
-      .patch("/api/articles/1")
-      .send({ inc_votes: "cheese" })
-      .expect(400);
+});
 
+describe("GET /api/articles", () => {
+  test("200: returns array of objects including comment count", async () => {
+    const result = await request(app).get("/api/articles").expect(200);
+    expect(result.body.articles).toBeInstanceOf(Array);
+    result.body.articles.forEach((article) => {
+      expect(article).toMatchObject({
+        author: expect.any(String),
+        title: expect.any(String),
+        article_id: expect.any(Number),
+        body: expect.any(String),
+        topic: expect.any(String),
+        created_at: expect.any(String),
+        votes: expect.any(Number),
+        comment_count: expect.any(Number),
+      });
+    });
+    expect(result.body.articles).toBeSortedBy("created_at", {
+      descending: true,
+    });
+  });
+  test("400: responds bad request for invalid path", async () => {
+    const result = await request(app).get("/api/notArticles").expect(400);
     expect(result.body.msg).toBe("Bad request");
   });
 });
