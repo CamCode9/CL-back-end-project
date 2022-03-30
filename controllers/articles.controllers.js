@@ -10,7 +10,7 @@ const {
 exports.getArticlesById = async (req, res, next) => {
   try {
     const { article_id } = req.params;
-    const result = await selectArticlesById(article_id, next);
+    const result = await selectArticlesById(article_id);
     res.status(200).send({ article: result[0] });
   } catch (err) {
     next(err);
@@ -19,7 +19,8 @@ exports.getArticlesById = async (req, res, next) => {
 
 exports.getAllArticles = async (req, res, next) => {
   try {
-    const result = await selectArticlesById();
+    let { sort_by, order, topic } = req.query;
+    const result = await selectArticlesById(null, sort_by, order, topic);
     res.status(200).send({ articles: result });
   } catch (err) {
     next(err);
