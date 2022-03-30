@@ -72,9 +72,8 @@ exports.postComment = async (req, res, next) => {
       "article_id",
       article_id
     );
-    const userExists = await checkExists("users", "username", author);
 
-    if (articleExists && userExists) {
+    if (articleExists) {
       let result = await sendComment(article_id, author, body);
       res.status(201).send({ new_comment: result });
     }

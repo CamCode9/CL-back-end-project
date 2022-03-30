@@ -1,4 +1,5 @@
 const db = require("../db/connection");
+const { checkExists } = require("../db/helpers/utils");
 
 exports.selectArticlesById = async (article_id) => {
   let articleQuery = `SELECT * FROM articles`;
@@ -51,12 +52,14 @@ exports.selectCommentsByArticle = async (article_id) => {
 };
 
 exports.sendComment = async (article_id, author, body) => {
-  if (typeof body != "string") {
+  if (typeof body != "string" || typeof author != "string") {
     return Promise.reject({ status: 400, msg: "Invalid data type" });
   } else {
-    const postQuery = `INSERT INTO comments (article_id, author, body) VALUES ($1, $2, $3) RETURNING *;`;
-    const new_comment = await db.query(postQuery, [article_id, author, body]);
-
-    return new_comment.rows[0];
+    const userExists = await checkExists("users", "username", author);
+    if (userExists) {
+      const postQuery = `INSERT INTO comments (article_id, author, body) VALUES ($1, $2, $3) RETURNING *;`;
+      const new_comment = await db.query(postQuery, [article_id, author, body]);
+      return new_comment.rows[0];
+    }
   }
 };
