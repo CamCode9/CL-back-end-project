@@ -141,3 +141,33 @@ describe("GET /api/articles", () => {
     expect(result.body.msg).toBe("Bad request");
   });
 });
+
+describe.only("GET /api/articles/:article_id/comments", () => {
+  test("200: responds with array of all comments", async () => {
+    const result = await request(app)
+      .get("/api/articles/1/comments")
+      .expect(200);
+    expect(result.body.comments).toBeInstanceOf(Array);
+    result.body.comments.forEach((comment) => {
+      expect(comment).toMatchObject({
+        comment_id: expect.any(Number),
+        votes: expect.any(Number),
+        created_at: expect.any(String),
+        author: expect.any(String),
+        body: expect.any(String),
+      });
+    });
+  });
+  test("404: wrong article id", async () => {
+    const result = await request(app)
+      .get("/api/articles/99995/comments")
+      .expect(404);
+    expect(result.body.msg).toBe("Article not found");
+  });
+  test("400: responds bad request for article ID not an integer", async () => {
+    const result = await request(app)
+      .get("/api/articles/anArticle/comments")
+      .expect(400);
+    expect(result.body.msg).toBe("Bad request");
+  });
+});

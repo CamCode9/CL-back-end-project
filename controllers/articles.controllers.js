@@ -3,6 +3,7 @@ const {
   selectAllArticles,
   selectArticlesById,
   updateArticleVoteById,
+  selectCommentsByArticle,
 } = require("../models/articles.models");
 
 exports.getArticlesById = async (req, res, next) => {
@@ -37,6 +38,16 @@ exports.patchArticle = async (req, res, next) => {
       let updatedArticle = await updateArticleVoteById(article_id, voteInc);
       res.status(200).send({ updatedArticle });
     }
+  } catch (err) {
+    next(err);
+  }
+};
+
+exports.getArticleComments = async (req, res, next) => {
+  try {
+    const { article_id } = req.params;
+    let result = await selectCommentsByArticle(article_id);
+    res.status(200).send({ comments: result });
   } catch (err) {
     next(err);
   }
