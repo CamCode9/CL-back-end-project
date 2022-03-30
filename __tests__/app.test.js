@@ -215,12 +215,12 @@ describe("POST /api/articles/:article_id/comments", () => {
       .expect(404);
     expect(result.body.msg).toBe("Resource not found");
   });
-  test("404: invalid username type (user not found)", async () => {
+  test("400: invalid username type (user not found)", async () => {
     const result = await request(app)
       .post("/api/articles/2/comments")
       .send({ username: ["secret"], body: "Up the blues" })
-      .expect(404);
-    expect(result.body.msg).toBe("Resource not found");
+      .expect(400);
+    expect(result.body.msg).toBe("Invalid data type");
   });
   test("400: invalid body type", async () => {
     const result = await request(app)
