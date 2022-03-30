@@ -4,6 +4,7 @@ const {
   selectArticlesById,
   updateArticleVoteById,
   selectCommentsByArticle,
+  sendComment,
 } = require("../models/articles.models");
 
 exports.getArticlesById = async (req, res, next) => {
@@ -54,6 +55,28 @@ exports.getArticleComments = async (req, res, next) => {
     if (articleExists) {
       let result = await selectCommentsByArticle(article_id);
       res.status(200).send({ comments: result });
+    }
+  } catch (err) {
+    next(err);
+  }
+};
+
+exports.postComment = async (req, res, next) => {
+  try {
+    const author = req.body.username;
+    const { body } = req.body;
+    const { article_id } = req.params;
+
+    const articleExists = await checkExists(
+      "articles",
+      "article_id",
+      article_id
+    );
+    const userExists = await checkExists("users", "username", author);
+
+    if (articleExists && userExists) {
+      let result = await sendComment(article_id, author, body);
+      res.status(201).send({ new_comment: result });
     }
   } catch (err) {
     next(err);
