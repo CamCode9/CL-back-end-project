@@ -43,3 +43,13 @@ exports.updateArticleVoteById = async (article_id, voteInc) => {
   );
   return result.rows[0];
 };
+
+exports.selectCommentsByArticle = async (article_id) => {
+  let commentQuery = `SELECT comment_id, votes, created_at, author, body FROM comments WHERE article_id = $1`;
+  const commentArray = await db.query(commentQuery, [article_id]);
+  if (commentArray.rows.length === 0) {
+    return Promise.reject({ status: 404, msg: "Article not found" });
+  } else {
+    return commentArray.rows;
+  }
+};
