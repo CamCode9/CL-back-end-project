@@ -142,7 +142,7 @@ describe("GET /api/articles", () => {
   });
 });
 
-describe.only("GET /api/articles/:article_id/comments", () => {
+describe("GET /api/articles/:article_id/comments", () => {
   test("200: responds with array of all comments", async () => {
     const result = await request(app)
       .get("/api/articles/1/comments")
@@ -162,12 +162,19 @@ describe.only("GET /api/articles/:article_id/comments", () => {
     const result = await request(app)
       .get("/api/articles/99995/comments")
       .expect(404);
-    expect(result.body.msg).toBe("Article not found");
+    expect(result.body.msg).toBe("Resource not found");
   });
   test("400: responds bad request for article ID not an integer", async () => {
     const result = await request(app)
       .get("/api/articles/anArticle/comments")
       .expect(400);
     expect(result.body.msg).toBe("Bad request");
+  });
+  test("200: responds with empty array for valid article w no comments", async () => {
+    const result = await request(app)
+      .get("/api/articles/2/comments")
+      .expect(200);
+    expect(result.body.comments).toBeInstanceOf(Array);
+    expect(result.body.comments).toEqual([]);
   });
 });

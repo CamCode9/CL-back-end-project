@@ -46,8 +46,15 @@ exports.patchArticle = async (req, res, next) => {
 exports.getArticleComments = async (req, res, next) => {
   try {
     const { article_id } = req.params;
-    let result = await selectCommentsByArticle(article_id);
-    res.status(200).send({ comments: result });
+    const articleExists = await checkExists(
+      "articles",
+      "article_id",
+      article_id
+    );
+    if (articleExists) {
+      let result = await selectCommentsByArticle(article_id);
+      res.status(200).send({ comments: result });
+    }
   } catch (err) {
     next(err);
   }
