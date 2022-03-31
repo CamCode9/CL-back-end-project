@@ -5,6 +5,7 @@ const {
   updateArticleVoteById,
   selectCommentsByArticle,
   sendComment,
+  removeCommentById,
 } = require("../models/articles.models");
 
 exports.getArticlesById = async (req, res, next) => {
@@ -36,10 +37,9 @@ exports.patchArticle = async (req, res, next) => {
       "article_id",
       article_id
     );
-    if (articleExists) {
-      let updatedArticle = await updateArticleVoteById(article_id, voteInc);
-      res.status(200).send({ updatedArticle });
-    }
+
+    let updatedArticle = await updateArticleVoteById(article_id, voteInc);
+    res.status(200).send({ updatedArticle });
   } catch (err) {
     next(err);
   }
@@ -53,10 +53,9 @@ exports.getArticleComments = async (req, res, next) => {
       "article_id",
       article_id
     );
-    if (articleExists) {
-      let result = await selectCommentsByArticle(article_id);
-      res.status(200).send({ comments: result });
-    }
+
+    let result = await selectCommentsByArticle(article_id);
+    res.status(200).send({ comments: result });
   } catch (err) {
     next(err);
   }
@@ -74,10 +73,24 @@ exports.postComment = async (req, res, next) => {
       article_id
     );
 
-    if (articleExists) {
-      let result = await sendComment(article_id, author, body);
-      res.status(201).send({ new_comment: result });
-    }
+    let result = await sendComment(article_id, author, body);
+    res.status(201).send({ new_comment: result });
+  } catch (err) {
+    next(err);
+  }
+};
+
+exports.deleteComment = async (req, res, next) => {
+  try {
+    const { comment_id } = req.params;
+    const commentExists = await checkExists(
+      "comments",
+      "comment_id",
+      comment_id
+    );
+
+    let result = await removeCommentById(comment_id);
+    res.status(204).send();
   } catch (err) {
     next(err);
   }
