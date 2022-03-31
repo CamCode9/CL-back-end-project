@@ -1,14 +1,43 @@
 const db = require("../db/connection");
 const { checkExists } = require("../db/helpers/utils");
 
-exports.selectArticlesById = async (article_id) => {
+exports.selectArticlesById = async (
+  article_id,
+  sort_by = "created_at",
+  order = "desc",
+  topic
+) => {
   let articleQuery = `SELECT * FROM articles`;
   let result;
+  const validSort = [
+    "author",
+    "title",
+    "article_id",
+    "topic",
+    "created_at",
+    "votes",
+    "comment_count",
+  ];
+  const validOrder = ["desc", "asc"];
+  const validTopic = ["cats", "mitch", "paper", undefined];
+
+  const sortCheck = validSort.includes(sort_by);
+  const orderCheck = validOrder.includes(order);
+  const topicCheck = validTopic.includes(topic);
+
+  if (!sortCheck || !orderCheck || !topicCheck) {
+    return Promise.reject({ status: 400, msg: "Invalid query" });
+  }
 
   if (!article_id) {
-    articleQuery += ` ORDER BY created_at DESC;`;
-    result = await db.query(articleQuery);
-  } else {
+    if (topic) {
+      articleQuery += ` WHERE topic = $1 ORDER BY ${sort_by} ${order};`;
+      result = await db.query(articleQuery, [topic]);
+    } else {
+      articleQuery += ` ORDER BY ${sort_by} ${order};`;
+      result = await db.query(articleQuery);
+    }
+  } else if (article_id) {
     articleQuery += ` WHERE article_id = $1;`;
     result = await db.query(articleQuery, [article_id]);
   }

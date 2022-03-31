@@ -102,6 +102,7 @@ describe("PATCH /api/articles/:article_id", () => {
   });
 });
 
+//updated test to reflect additional query info
 describe("GET /api/users", () => {
   test("200: responds with array of users", async () => {
     const result = await request(app).get("/api/users").expect(200);
@@ -139,6 +140,59 @@ describe("GET /api/articles", () => {
   test("400: responds bad request for invalid path", async () => {
     const result = await request(app).get("/api/notArticles").expect(400);
     expect(result.body.msg).toBe("Bad request");
+  });
+  //new tests below
+  test("200: returns array sorted by valid column", async () => {
+    const result = await request(app)
+      .get("/api/articles?sort_by=votes")
+      .expect(200);
+    expect(result.body.articles).toBeSortedBy("votes", { descending: true });
+  });
+  test("400: invalid sort_by returns bad req", async () => {
+    const result = await request(app)
+      .get("/api/articles?sort_by=darts")
+      .expect(400);
+    expect(result.body.msg).toBe("Invalid query");
+  });
+  test("200: returns array sorted by valid column in order", async () => {
+    const result = await request(app)
+      .get("/api/articles?sort_by=votes&order=asc")
+      .expect(200);
+    expect(result.body.articles).toBeSortedBy("votes");
+  });
+  test("400: invalid order returns bad req", async () => {
+    const result = await request(app).get("/api/articles?order=up").expect(400);
+    expect(result.body.msg).toBe("Invalid query");
+  });
+  test("200: returns array of one topic query", async () => {
+    const result = await request(app)
+      .get("/api/articles?topic=cats")
+      .expect(200);
+    expect(result.body.articles[0].topic).toBe("cats");
+  });
+  test("400: returns bad request for invalid topic", async () => {
+    const result = await request(app)
+      .get("/api/articles?topic=flaps")
+      .expect(400);
+  });
+  test("200: returns array of objects with all correct queries", async () => {
+    const result = await request(app)
+      .get("/api/articles?sort_by=votes&order=asc&topic=mitch")
+      .expect(200);
+    expect(result.body.articles).toBeInstanceOf(Array);
+    result.body.articles.forEach((article) => {
+      expect(article).toMatchObject({
+        author: expect.any(String),
+        title: expect.any(String),
+        article_id: expect.any(Number),
+        body: expect.any(String),
+        topic: "mitch",
+        created_at: expect.any(String),
+        votes: expect.any(Number),
+        comment_count: expect.any(Number),
+      });
+    });
+    expect(result.body.articles).toBeSortedBy("votes");
   });
 });
 
@@ -230,4 +284,3 @@ describe("POST /api/articles/:article_id/comments", () => {
     expect(result.body.msg).toBe("Invalid data type");
   });
 });
-//lots of err testing for this one pls
