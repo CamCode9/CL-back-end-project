@@ -107,6 +107,7 @@ describe("GET /api/users", () => {
   test("200: responds with array of users", async () => {
     const result = await request(app).get("/api/users").expect(200);
     expect(result.body.users).toBeInstanceOf(Array);
+    expect(result.body.users.length).toBe(4);
     result.body.users.forEach((user) => {
       expect(user).toMatchObject({ username: expect.any(String) });
     });
