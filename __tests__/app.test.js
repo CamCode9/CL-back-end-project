@@ -302,4 +302,12 @@ describe("DELETE /api/comments/comment_id", () => {
       .expect(400);
     expect(result.body.msg).toBe("Bad request");
   });
+  test("400: bad request for missing id", async () => {
+    const result = await request(app).delete("/api/comments/").expect(400);
+    expect(result.body.msg).toBe("Bad request");
+  });
+  test("400: bad request for mis spelling", async () => {
+    const result = await request(app).delete("/api/comment/1").expect(400);
+    expect(result.body.msg).toBe("Bad request");
+  });
 });
