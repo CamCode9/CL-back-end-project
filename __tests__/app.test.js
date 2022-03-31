@@ -285,3 +285,19 @@ describe("POST /api/articles/:article_id/comments", () => {
     expect(result.body.msg).toBe("Invalid data type");
   });
 });
+
+describe("DELETE /api/comments/comment_id", () => {
+  test("204: response with no content - successful delete", async () => {
+    const result = await request(app).delete("/api/comments/1").expect(204);
+  });
+  test("404: not found for valid non existent comment", async () => {
+    const result = await request(app)
+      .delete("/api/comments/100000")
+      .expect(404);
+  });
+  test("400: bad request for non valid commment id", async () => {
+    const result = await request(app)
+      .delete("/api/comments/notNumber")
+      .expect(400);
+  });
+});

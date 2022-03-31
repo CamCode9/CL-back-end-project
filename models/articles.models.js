@@ -85,10 +85,13 @@ exports.sendComment = async (article_id, author, body) => {
     return Promise.reject({ status: 400, msg: "Invalid data type" });
   } else {
     const userExists = await checkExists("users", "username", author);
-    if (userExists) {
-      const postQuery = `INSERT INTO comments (article_id, author, body) VALUES ($1, $2, $3) RETURNING *;`;
-      const new_comment = await db.query(postQuery, [article_id, author, body]);
-      return new_comment.rows[0];
-    }
+    const postQuery = `INSERT INTO comments (article_id, author, body) VALUES ($1, $2, $3) RETURNING *;`;
+    const new_comment = await db.query(postQuery, [article_id, author, body]);
+    return new_comment.rows[0];
   }
+};
+
+exports.removeCommentById = async (comment_id) => {
+  const deleteQuery = `DELETE FROM comments WHERE comment_id = $1`;
+  return db.query(deleteQuery, [comment_id]);
 };
