@@ -2,16 +2,21 @@
   "GET /api": {
     "description": "serves up a json representation of all the available endpoints of the api"
   },
+
   "GET /api/topics": {
     "description": "serves an array of all topics",
     "queries": [],
     "exampleResponse": {
-      "topics": [{ "slug": "football", "description": "Footie!" }]
+      "topics": [
+          { "slug": "football", "description": "Footie!" }, 
+          { "description": "Not dogs", "slug": "cats" }
+      ]
     }
   },
+
   "GET /api/articles": {
-    "description": "serves an array of all topics",
-    "queries": ["author", "topic", "sort_by", "order"],
+    "description": "serves an array of all articles",
+    "queries": [ "topic", "sort_by", "order" ],
     "exampleResponse": {
       "articles": [
         {
@@ -19,9 +24,104 @@
           "topic": "cooking",
           "author": "weegembump",
           "body": "Text from the article..",
-          "created_at": 1527695953341
+          "created_at": 1527695953341,
+          "article_id": 1,
+          "comment_count": 9,
+          "votes": 0
+        },
+        {
+          "title": "The arras",
+          "topic": "sport",
+          "author": "spoonboy",
+          "body": "Text from the article..",
+          "created_at": 1527695953342,
+          "article_id": 2,
+          "comment_count": 16,
+          "votes": 50
         }
       ]
     }
+  }, 
+
+  "GET /api/users" : {
+      "description": "serves an array of all users",
+      "queries": [],
+      "exampleResoponse": {
+          "users": [
+              {"username": "marshmallow"},
+              {"username": "stringTheory"},
+              {"username": "MvG"}
+          ]
+      }
+  },
+
+  "GET /api/articles/:article_id" : {
+      "description": "serves an object containing all information from a specific article",
+      "queries": [],
+      "exampleResponse": {
+          "title": "The arras",
+          "topic": "sport",
+          "author": "spoonboy",
+          "body": "Text from the article..",
+          "created_at": 1527695953342,
+          "article_id": 2,
+          "comment_count": 16,
+          "votes": 5
+        }
+  },
+
+  "GET /api/articles/:article_id/comments": {
+      "description": "serves an array of comments relating to a specific article",
+      "queries": [],
+      "exampleResponse": [
+          {
+            "body": "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+            "votes": 16,
+            "author": "butter_bridge",
+            "article_id": 1,
+            "created_at": 1586179020000
+          },
+          {
+            "body": "The beautiful thing about treasure is that it exists. Got to find out what kind of sheets these are; not cotton, not rayon, silky.",
+            "votes": 14,
+            "author": "butter_bridge",
+            "article_id": 1,
+            "created_at": 1604113380000
+          }]
+  },
+
+  "PATCH /api/articles/:article_id": {
+      "description": "Increments/ decrements an articles votes by a given amount and responds with the updated article",
+      "queries": [],
+      "exampleRequestBody": { "inc_votes" : 1 },
+      "exampleResponse": {
+          "title": "Seafood substitutions are increasing",
+          "topic": "cooking",
+          "author": "weegembump",
+          "body": "Text from the article..",
+          "created_at": 1527695953341,
+          "article_id": 1,
+          "comment_count": 9,
+          "votes": 1
+        }
+  },
+
+  "POST /api/articles/:article_id/comments": {
+      "description": "Posts a user comment to a specific article and responds with the new comment",
+      "queries": [],
+      "exampleRequestBody": {"username": "some_name", "body": "comment here"},
+      "exampleResponse":  {
+          "body": "comment here",
+          "votes": 0,
+          "author": "some_name",
+          "article_id": 22,
+          "created_at": 1704113380010
+        }
+  },
+
+  "DELETE /api/comments/:comment_id": {
+      "description": "Deletes a specific user comment based on id and responds with 204",
+      "queries": []
   }
-}
+} 
+

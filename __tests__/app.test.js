@@ -311,3 +311,30 @@ describe("DELETE /api/comments/comment_id", () => {
     expect(result.body.msg).toBe("Bad request");
   });
 });
+
+describe("GET /api", () => {
+  test("200: returns json of all endpoints", async () => {
+    const result = await request(app).get("/api").expect(200);
+    const keysArr = Object.keys(result.body);
+    //currently have 9 endpoints but this could be updated in future
+    expect(keysArr.length).toBe(9);
+
+    const validRes = {
+      "GET /api": expect.any(Object),
+      "GET /api/topics": expect.any(Object),
+      "GET /api/articles": expect.any(Object),
+      "GET /api/users": expect.any(Object),
+      "GET /api/articles/:article_id": expect.any(Object),
+      "GET /api/articles/:article_id/comments": expect.any(Object),
+      "POST /api/articles/:article_id/comments": expect.any(Object),
+      "DELETE /api/comments/:comment_id": expect.any(Object),
+      "PATCH /api/articles/:article_id": expect.any(Object),
+    };
+    expect(result.body).toMatchObject(validRes);
+  });
+
+  test("400: bad request 1 ", async () => {
+    const result = await request(app).get("/appi").expect(400);
+    expect(result.body.msg).toBe("Bad request");
+  });
+});
