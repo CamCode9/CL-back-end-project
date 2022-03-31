@@ -294,10 +294,12 @@ describe("DELETE /api/comments/comment_id", () => {
     const result = await request(app)
       .delete("/api/comments/100000")
       .expect(404);
+    expect(result.body.msg).toBe("Resource not found");
   });
   test("400: bad request for non valid commment id", async () => {
     const result = await request(app)
       .delete("/api/comments/notNumber")
       .expect(400);
+    expect(result.body.msg).toBe("Bad request");
   });
 });
